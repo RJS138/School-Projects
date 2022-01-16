@@ -1,0 +1,4 @@
+﻿  proj6.cpp
+C:\Users\rsaun\OneDrive\Penn State\Summer 2020\CMPSC 122\assign6\assign6\proj6.cpp(37,16): warning C4834: discarding return value of function with 'nodiscard' attribute
+C:\Users\rsaun\OneDrive\Penn State\Summer 2020\CMPSC 122\assign6\assign6\proj6.cpp(44,21): warning C4018: '<': signed/unsigned mismatch
+  assign6.vcxproj -> C:\Users\rsaun\OneDrive\Penn State\Summer 2020\CMPSC 122\assign6\Debug\assign6.exe

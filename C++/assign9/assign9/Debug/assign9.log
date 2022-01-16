@@ -1,0 +1,3 @@
+﻿  projectALgAnadriver.cpp
+C:\Users\rsaun\OneDrive\Penn State\Summer 2020\CMPSC 122\assign9\assign9\projectALgAnadriver.cpp(85,14): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  assign9.vcxproj -> C:\Users\rsaun\OneDrive\Penn State\Summer 2020\CMPSC 122\assign9\Debug\assign9.exe
