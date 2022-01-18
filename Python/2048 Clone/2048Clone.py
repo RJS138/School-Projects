@@ -1,10 +1,12 @@
+from ast import Try
 import tkinter as tk
 from tkinter import font
 import random
 from typing import Collection, Text
+from warnings import catch_warnings
 
-#Defines all the colors to match the orginal game and defines font for better looking numbers and text.
-#color codes taken from the instructional guide that was linked
+#Defines all the colors to match the orginal game and defines font for better looking 
+#numbers and text.
 class Colors():
     GRID_COLOR = "#a39489"
     EMPTY_CELL_COLOR = "#c2b3a9"
@@ -94,7 +96,8 @@ class Game(tk.Frame):
         #Setup for the required text to show i coded this and the scoring text
         school_frame =  tk.Frame(self)
         school_frame.place(relx = 0.5, y= 0, anchor="n")
-        #I manually padded the spacing so that it looked a litle cleaner
+        #I manually padded the spacing so that it looked a litle cleaner. THis is required purely to
+        #prove authenticty of code base as requested by assignemnt rubric.
         tk.Label(school_frame, text="     Robert Saunders Jr                                      (RJS6748) | May 4, 2021", font= Colors.SCHOOL_LABEL_FONT).grid(row=0)
         score_frame = tk.Frame(self)
         score_frame.place(relx = 0.5, y =45, anchor="center")
@@ -122,14 +125,17 @@ class Game(tk.Frame):
         self.score = 0
     #Thsi function is called to stack two tiles together and prepares the board for the main game mechanic of combining them
     def stack(self):
-        new_matrix = [[0] * 4 for l in range(4)]
-        for i in range(4):
-            fill_position = 0
-            for j in range(4):
-                if self.matrix[i][j] != 0:
-                    new_matrix[i][fill_position] = self.matrix[i][j]
-                    fill_position += 1
-        self.matrix = new_matrix
+        try:
+            new_matrix = [[0] * 4 for l in range(4)]
+            for i in range(4):
+                fill_position = 0
+                for j in range(4):
+                    if self.matrix[i][j] != 0:
+                        new_matrix[i][fill_position] = self.matrix[i][j]
+                        fill_position += 1
+            self.matrix = new_matrix
+        except:
+            print ("No Moves")
     #THsi funciton is called to combne two tiles in game to make them grow
     def combine(self):
         for i in range(4):
@@ -177,12 +183,19 @@ class Game(tk.Frame):
     #This is the main game logic and uses the above functions to manipualte the grid into the 2048 game
     def left(self, event):
         self.stack()
+        print("Stack")
         self.combine()
+        print("COMBINE")
         self.stack()
+        print("Stack")
         self.add_new_tile()
+        print("NEW")
         self.update_GUI()
+        print("UI")
         self.game_over()
+        print("GO")
     def right(self, event):
+        self.game_over()
         self.reverse()
         self.combine()
         self.stack()
@@ -191,6 +204,7 @@ class Game(tk.Frame):
         self.update_GUI()
         self.game_over()
     def up(self, event):
+        self.game_over()
         self.transpose()
         self.stack()
         self.combine()
@@ -198,8 +212,9 @@ class Game(tk.Frame):
         self.transpose()
         self.add_new_tile()
         self.update_GUI()
-        self.game_over()
+        
     def down(self, event):
+        self.game_over()
         self.transpose()
         self.reverse()
         self.stack()
@@ -210,6 +225,7 @@ class Game(tk.Frame):
         self.add_new_tile()
         self.update_GUI()
         self.game_over()
+        
     #THese fucntions check if there are more possible moves or not needed for end game conditionss
     def horizontal_move_exists(self):
         for i in range(4):
@@ -230,7 +246,7 @@ class Game(tk.Frame):
             game_over_frame = tk.Frame(self.main_grid, borderwidth=2)
             game_over_frame.place(relx=0.5, rely=0.5, anchor="center")
             tk.Label(game_over_frame, text="You Win!", bg=Colors.WINNER_BG,fg=Colors.GAME_OVER_FONT_COLOR, font=Colors.GAME_OVER_FONT).pack()
-        elif not any(0 in row for row in self.matrix) and not self.horizontal_move_exists() and not self.vertical_move_exists():
+        elif not any(2048 in row for row in self.matrix) and not self.horizontal_move_exists() and not self.vertical_move_exists():
             game_over_frame = tk.Frame(self.main_grid, borderwidth=2)
             game_over_frame.place(relx=0.5, rely=0.5, anchor="center")
             tk.Label(game_over_frame, text="Game Over!", bg=Colors.LOSER_BG,fg=Colors.GAME_OVER_FONT_COLOR, font=Colors.GAME_OVER_FONT).pack()
