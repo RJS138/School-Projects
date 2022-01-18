@@ -12,14 +12,14 @@ from pygame.locals import*
 from pygame.time import Clock
 from pygame.version import ver
 
-#Initialize python window
+#Initialize python window with defualt screen size
 pygame.init()
 screenWidth = 500
 screenHeight =500
 screen = pygame.display.set_mode((screenWidth,screenHeight))
 pygame.display.set_caption('Breaker Brick')
 
-#Colors
+#Defines colors and default values used in the game assets.
 ORANGE = (255,128,0)
 RED = (153,0,0)
 DARKBLUE = (0,0,102)
@@ -30,6 +30,7 @@ lives = 3
 #Pygame clock setup
 clock = pygame.time.Clock()
 
+#Defines the Paddle class with initial movemnt values and asthetics
 class Paddle(pygame.sprite.Sprite):
     def __init__(self, color, width, height):
         super().__init__()
@@ -39,7 +40,7 @@ class Paddle(pygame.sprite.Sprite):
         pygame.draw.rect(self.image,color,[0,0,width,height])
         self.rect = self.image.get_rect()
         
-
+#Defines the projectile class with defualt values, asthetics, and supporting methods for gameplay features.
 class projectile(pygame.sprite.Sprite):
     def __init__(self,color):
         super().__init__()
@@ -58,7 +59,7 @@ class projectile(pygame.sprite.Sprite):
         self.rect.y = 500/2
         self.velocity = [randint(2,6),randint(-8,8)]
 
-
+#Defines the blocks for the player to break
 class squares(pygame.sprite.Sprite):
     def __init__(self,color, width, height):
         super().__init__()
@@ -71,17 +72,17 @@ allSprites = pygame.sprite.Group()
 allBalls = pygame.sprite.Group()
 allBricks = pygame.sprite.Group()
 
-#Font
+#Defines font used in the game
 font = pygame.font.Font(pygame.font.get_default_font(),12)
 
 
-#Creating the Paddle
+#Constructor that createds the paddle adn adds to the sprites groups
 player = Paddle(GREY, 50, 10)
 player.rect.x = 200
 player.rect.y = 450
 allSprites.add(player)
 
-#Creating the Ball
+#Constructor that creates the ball and adds to required sprite groups
 pong = projectile((255,255,255))
 pong.rect.x = player.rect.x + 23    
 pong.rect.y = player.rect.y - 20
@@ -89,7 +90,7 @@ allBalls.add(pong)
 allSprites.add(pong)
 maxBallSpeed = [-6,6]
 
-#Create Brick Layout
+#Construtor for spawning the bricks in a grid and adding them to sprite groups
 for i in range(6):
     for l in range(6):
         brick = squares(ORANGE, 70, 30)
@@ -99,7 +100,7 @@ for i in range(6):
         allBricks.add(brick)
     
 
-#Update Screen Function (Called once per frame)
+#Update Screen Function (Called once per frame) draws scoring features and lives to screen
 def updateDisplay():
     screen.fill(DARKBLUE)
     allSprites.draw(screen)
@@ -161,7 +162,7 @@ while inGame:
         if pong.velocity[1] == 0:
             pong.velocity[1] += 1
 
-    #Paddle and Ball Collision detection
+    #Paddle and Ball Collision detection adds 'fun' features to increase or decreease speed of ball by matching movement of incoming ball
     paddleDirection = 1
     if pygame.sprite.spritecollideany(player,allBalls):
         if abs(pong.rect.bottom - player.rect.top) < 8 and pong.velocity[1] > 0:
@@ -184,7 +185,7 @@ while inGame:
             pong.velocity[1] *= -1
 
 
-    #Ball and Brick Collision detection
+    #Ball and Brick Collision detection has built in padding to make game feel more 'fun'
     brickCollision = pygame.sprite.spritecollide(pong, allBricks, False)
     for brick in brickCollision:
         if abs(pong.rect.bottom - brick.rect.top) < 8 and pong.velocity[1] > 0:
