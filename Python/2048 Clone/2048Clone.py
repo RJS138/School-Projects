@@ -1,6 +1,6 @@
 from ast import Try
 import tkinter as tk
-from tkinter import font
+from tkinter import HORIZONTAL, font
 import random
 from typing import Collection, Text
 from warnings import catch_warnings
@@ -70,7 +70,7 @@ class Game(tk.Frame):
         self.main_grid.grid(pady=(100,0))
         self.makeGUI()
         self.start_game()
-        #Binds the keys neede dto play and allows multiple action to be made under each
+        #Binds the keys needed to play and allows multiple action to be made under each
         self.master.bind("<Left>", self.left)
         self.master.bind("<Right>", self.right)
         self.master.bind("<Up>", self.up)
@@ -123,109 +123,6 @@ class Game(tk.Frame):
         self.cells[row][column]["number"].configure(bg=Colors.CELL_COLORS[2], fg= Colors.CELL_NUMBER_COLORS[2],font=Colors.CELL_NUMBER_FONTS[2], text="2")
 
         self.score = 0
-    #Thsi function is called to stack two tiles together and prepares the board for the main game mechanic of combining them
-    def stack(self):
-        try:
-            new_matrix = [[0] * 4 for l in range(4)]
-            for i in range(4):
-                fill_position = 0
-                for j in range(4):
-                    if self.matrix[i][j] != 0:
-                        new_matrix[i][fill_position] = self.matrix[i][j]
-                        fill_position += 1
-            self.matrix = new_matrix
-        except:
-            print ("No Moves")
-    #THsi funciton is called to combne two tiles in game to make them grow
-    def combine(self):
-        for i in range(4):
-            for j in range(3):
-                if self.matrix[i][j] != 0 and self.matrix[i][j] == self.matrix[i][j + 1]:
-                    self.matrix[i][j] *= 2
-                    self.matrix[i][j + 1] = 0
-                    self.score += self.matrix[i][j]
-    #Reversed the matrix for calulating if tiles can be combind or stacked            
-    def reverse(self):
-        new_matrix = []
-        for i in range(4):
-            new_matrix.append([])
-            for j in range(4):
-                new_matrix[i].append(self.matrix[i][3 - j])
-        self.matrix = new_matrix
-    #Transposes the entire matrix to make the tiles easier to manager later on
-    def transpose(self):
-        new_matrix = [[0] * 4 for l in range(4)]
-        for i in range(4):
-            for j in range(4):
-                new_matrix[i][j] = self.matrix[j][i]
-        self.matrix = new_matrix 
-    #THis fucntion adds new tiles to the board and is used on every key press proably a bad idea but oh well
-    def add_new_tile(self):
-        row = random.randint(0,3)
-        column = random.randint(0,3)
-        while (self.matrix[row][column] != 0):
-            row = random.randint(0,3)
-            column = random.randint(0,3)
-        self.matrix[row][column] = random.choice([2,4])
-    #Updates the grid based on the key pressed. This is called evey key press
-    def update_GUI(self):
-        for i in range(4):
-            for j in range(4):
-                cell_value = self.matrix[i][j]
-                if cell_value == 0:
-                    self.cells[i][j]["frame"].configure(bg=Colors.EMPTY_CELL_COLOR)
-                    self.cells[i][j]["number"].configure(bg=Colors.EMPTY_CELL_COLOR, text="")
-                else:
-                    self.cells[i][j]["frame"].configure(bg=Colors.CELL_COLORS[cell_value])
-                    self.cells[i][j]["number"].configure(bg=Colors.CELL_COLORS[cell_value], fg=Colors.CELL_NUMBER_COLORS[cell_value],font=Colors.CELL_NUMBER_FONTS[cell_value], text=str(cell_value))
-        self.score_label.configure(text=self.score)
-        self.update_idletasks()
-    #This is the main game logic and uses the above functions to manipualte the grid into the 2048 game
-    def left(self, event):
-        self.stack()
-        print("Stack")
-        self.combine()
-        print("COMBINE")
-        self.stack()
-        print("Stack")
-        self.add_new_tile()
-        print("NEW")
-        self.update_GUI()
-        print("UI")
-        self.game_over()
-        print("GO")
-    def right(self, event):
-        self.game_over()
-        self.reverse()
-        self.combine()
-        self.stack()
-        self.reverse()
-        self.add_new_tile()
-        self.update_GUI()
-        self.game_over()
-    def up(self, event):
-        self.game_over()
-        self.transpose()
-        self.stack()
-        self.combine()
-        self.stack()
-        self.transpose()
-        self.add_new_tile()
-        self.update_GUI()
-        
-    def down(self, event):
-        self.game_over()
-        self.transpose()
-        self.reverse()
-        self.stack()
-        self.combine()
-        self.stack()
-        self.reverse()
-        self.transpose()
-        self.add_new_tile()
-        self.update_GUI()
-        self.game_over()
-        
     #THese fucntions check if there are more possible moves or not needed for end game conditionss
     def horizontal_move_exists(self):
         for i in range(4):
@@ -246,10 +143,116 @@ class Game(tk.Frame):
             game_over_frame = tk.Frame(self.main_grid, borderwidth=2)
             game_over_frame.place(relx=0.5, rely=0.5, anchor="center")
             tk.Label(game_over_frame, text="You Win!", bg=Colors.WINNER_BG,fg=Colors.GAME_OVER_FONT_COLOR, font=Colors.GAME_OVER_FONT).pack()
-        elif not any(2048 in row for row in self.matrix) and not self.horizontal_move_exists() and not self.vertical_move_exists():
+        elif not any(0 in row for row in self.matrix) and not self.horizontal_move_exists() and not self.vertical_move_exists():
             game_over_frame = tk.Frame(self.main_grid, borderwidth=2)
             game_over_frame.place(relx=0.5, rely=0.5, anchor="center")
             tk.Label(game_over_frame, text="Game Over!", bg=Colors.LOSER_BG,fg=Colors.GAME_OVER_FONT_COLOR, font=Colors.GAME_OVER_FONT).pack()
+        #These lines were used to bug fix my game hanging when trying to combine a full grid in an impossible way twice in a  row this was fixed
+        #elif not any(0 in row for row in self.matrix) and  self.horizontal_move_exists() and not self.vertical_move_exists():
+            print("No vertical Move Exists")
+        #elif not any(0 in row for row in self.matrix) and  not self.horizontal_move_exists() and self.vertical_move_exists():
+            print("No horizontal Move Exists")
+    #Thsi function is called to stack two tiles together and prepares the board for the main game mechanic of combining them
+    def stack(self):
+        new_matrix = [[0] * 4 for l in range(4)]
+        #This is a check for room on the grid before moving cells around
+        if  any(0 in row for row in self.matrix):
+            for i in range(4):
+                fill_position = 0
+                for j in range(4):
+                    if self.matrix[i][j] != 0:
+                        new_matrix[i][fill_position] = self.matrix[i][j]
+                        fill_position += 1
+            self.matrix = new_matrix
+        else: 
+            return
+    #THsi funciton is called to combne two tiles in game to make them grow
+    def combine(self):
+        for i in range(4):
+            for j in range(3):
+                if self.matrix[i][j] != 0 and self.matrix[i][j] == self.matrix[i][j + 1]:
+                    self.matrix[i][j] *= 2
+                    self.matrix[i][j + 1] = 0
+                    self.score += self.matrix[i][j]
+    #Reversed the matrix for calulating if tiles can be combind or stacked horizontaly           
+    def reverse(self):
+        new_matrix = []
+        for i in range(4):
+            new_matrix.append([])
+            for j in range(4):
+                new_matrix[i].append(self.matrix[i][3 - j])
+        self.matrix = new_matrix
+    #Transposes the entire matrix to make tiles able to be stacked when using vertical combinations
+    def transpose(self):
+        new_matrix = [[0] * 4 for l in range(4)]
+        for i in range(4):
+            for j in range(4):
+                new_matrix[i][j] = self.matrix[j][i]
+        self.matrix = new_matrix 
+    #THis fucntion adds new tiles to the board and is used on every key press proably a bad idea but oh well
+    def add_new_tile(self):
+        #THis is a check to remove the hanging bug cause by an infinite while loop when no space was available
+        #to palce a new random cell
+        if  any(0 in row for row in self.matrix): 
+            row = random.randint(0,3)
+            column = random.randint(0,3)
+            while (self.matrix[row][column] != 0):
+                row = random.randint(0,3)
+                column = random.randint(0,3)
+            self.matrix[row][column] = random.choice([2,4])
+        else:
+            return
+    #Updates the grid based on the key pressed. This is called evey key press
+    def update_GUI(self):
+        for i in range(4):
+            for j in range(4):
+                cell_value = self.matrix[i][j]
+                if cell_value == 0:
+                    self.cells[i][j]["frame"].configure(bg=Colors.EMPTY_CELL_COLOR)
+                    self.cells[i][j]["number"].configure(bg=Colors.EMPTY_CELL_COLOR, text="")
+                else:
+                    self.cells[i][j]["frame"].configure(bg=Colors.CELL_COLORS[cell_value])
+                    self.cells[i][j]["number"].configure(bg=Colors.CELL_COLORS[cell_value], fg=Colors.CELL_NUMBER_COLORS[cell_value],font=Colors.CELL_NUMBER_FONTS[cell_value], text=str(cell_value))
+        self.score_label.configure(text=self.score)
+        self.update_idletasks()
+    #This is the main game logic and uses the above functions to manipualte the grid into the 2048 game
+    def left(self, event):
+        self.stack()      
+        self.combine()       
+        self.stack()       
+        self.add_new_tile()      
+        self.update_GUI()
+        self.game_over()
+    def right(self, event):
+        self.reverse()
+        self.combine()
+        self.stack()
+        self.reverse()
+        self.add_new_tile()
+        self.update_GUI()
+        self.game_over()
+    def up(self, event):
+        self.transpose()
+        self.stack()
+        self.combine()
+        self.stack()
+        self.transpose()
+        self.add_new_tile()
+        self.update_GUI()
+        
+    def down(self, event):
+        self.transpose()
+        self.reverse()
+        self.stack()
+        self.combine()
+        self.stack()
+        self.reverse()
+        self.transpose()
+        self.add_new_tile()
+        self.update_GUI()
+        self.game_over()
+        
+    
 def main():
     Game()
 
